@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casamento M&A</title>
+    <link href="https://fonts.googleapis.com/css2?family=Aleo:wght@300&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="mono.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #f8f8ec;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #61694b;
+            font-family: 'Aleo', serif;
+            font-weight: 600; /* Light */
+
+        }
+        
+        /* Estilo da galeria usando CSS columns para layout masonry */
+        .gallery {
+            columns: 4;
+            column-gap: 16px;
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        /* Responsividade para diferentes tamanhos de tela */
+        @media screen and (max-width: 1200px) {
+            .gallery {
+                columns: 3;
+            }
+        }
+        
+        @media screen and (max-width: 768px) {
+            .gallery {
+                columns: 2;
+            }
+        }
+        
+        @media screen and (max-width: 480px) {
+            .gallery {
+                columns: 1;
+            }
+        }
+        
+        /* Estilo dos itens da galeria */
+        .gallery-item {
+            width: 100%;
+            margin-bottom: 16px;
+            break-inside: avoid; /* Impede que as imagens sejam cortadas entre colunas */
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.02);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            display: block;
+            border-radius: 8px;
+        }
+        
+        /* Estilo do lightbox */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .lightbox.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+        }
+        
+        .lightbox-img {
+            display: block;
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 4px;
+        }
+        
+        .close-lightbox {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            outline: none;
+        }
+        
+        /* Botões de navegação do lightbox */
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .prev {
+            left: 20px;
+        }
+        
+        .next {
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Código de Vestimenta</h1>
+    
+    <div class="gallery"></div>
+    
+    <!-- Lightbox para visualização em tela cheia -->
+    <div class="lightbox">
+        <div class="lightbox-content">
+            <button class="close-lightbox">&times;</button>
+            <img src="" alt="" class="lightbox-img">
+            <button class="lightbox-nav prev">&lt;</button>
+            <button class="lightbox-nav next">&gt;</button>
+        </div>
+    </div>
+    
+    <script>
+        const totalImagens = 65;
+        const extensao = 'jpeg'; // Troque para 'png' ou outro se necessário
+        const galeria = document.querySelector('.gallery');
+        
+        let currentIndex = 0;
+
+        for (let i = 1; i <= totalImagens; i++) {
+            const div = document.createElement('div');
+            div.className = 'gallery-item';
+            const img = document.createElement('img');
+            img.src = `img/foto${i}.${extensao}`;
+            img.alt = `Foto ${i}`;
+            div.appendChild(img);
+            galeria.appendChild(div);
+        }
+        // JavaScript para funcionalidade do lightbox
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        const lightbox = document.querySelector('.lightbox');
+        const lightboxImg = document.querySelector('.lightbox-img');
+        const closeBtn = document.querySelector('.close-lightbox');
+        const nextBtn = document.querySelector('.next');
+        const prevBtn = document.querySelector('.prev');
+        
+        // Abrir o lightbox quando uma imagem é clicada
+        galleryItems.forEach((item, index) => {
+            item.addEventListener('click', () => {
+                currentIndex = index;
+                const imgSrc = item.querySelector('img').src;
+                lightboxImg.src = imgSrc;
+                lightbox.classList.add('active');
+            });
+        });
+        
+        // Fechar o lightbox
+        closeBtn.addEventListener('click', () => {
+            lightbox.classList.remove('active');
+        });
+        
+        // Fechar o lightbox ao clicar fora da imagem
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) {
+                lightbox.classList.remove('active');
+            }
+        });
+        
+        // Navegação para a próxima imagem
+        nextBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % galleryItems.length;
+            lightboxImg.src = galleryItems[currentIndex].querySelector('img').src;
+        });
+        
+        // Navegação para a imagem anterior
+        prevBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + galleryItems.length) % galleryItems.length;
+            lightboxImg.src = galleryItems[currentIndex].querySelector('img').src;
+        });
+        
+        // Navegação com teclas do teclado
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('active')) return;
+            
+            if (e.key === 'Escape') {
+                lightbox.classList.remove('active');
+            } else if (e.key === 'ArrowRight') {
+                nextBtn.click();
+            } else if (e.key === 'ArrowLeft') {
+                prevBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
